@@ -41,22 +41,20 @@ const getStopsForRoute = async (routeId) => {
   }
 };
 
+// Controller to handle the shortest path request for a given route_id
 const getShortestPathByRoute = async (req, res) => {
-  // Get raw route ID from URL and strip any prefix like "IDFM:C"
-  const rawRouteId = req.params.route_id;
-  const routeId = rawRouteId.replace(/^IDFM:C/, '');  // Only keeps the numeric part
+  const routeId = req.params.route_id;
 
   try {
     const stops = await getStopsForRoute(routeId);
 
+    // Placeholder for shortest path algorithm. Currently returns stops in order.
     res.json({ message: `Shortest path for route_id: ${routeId}`, stops });
   } catch (error) {
     console.error('Error calculating the shortest path:', error);
     res.status(500).json({ message: 'Error calculating the shortest path', error: error.message });
   }
 };
-
-
 
 module.exports = {
   getShortestPathByRoute,

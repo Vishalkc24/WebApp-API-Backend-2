@@ -93,7 +93,7 @@ const getBmtcPolylineByRouteID = async (req, res) => {
     await client.connect();
 
     const result = await client.query(
-      'SELECT response FROM api_responses_paris_vishal_trips_stop_times WHERE route_id = $1',
+      'SELECT response FROM api_responses_paris_monday WHERE route_id = $1',
       [routeID]  // ✅ This is now a string
     );
     
@@ -119,12 +119,7 @@ const getBmtcPolylineByRouteID = async (req, res) => {
 
 // Controller to get the polyline response for a specific route_id from the DB
 const getBmtcTripStopTimesByRouteID = async (req, res) => {
-  const routeID = req.params.route_id;  // ✅ Use as string, e.g., 'IDFM:C00001'
-
-  // // Validate route_id
-  // if (!routeID || typeof routeID !== 'string' || !routeID.startsWith('IDFM:')) {
-  //   return res.status(400).json({ message: 'Invalid route_id format' });
-  // }
+  const routeID = req.params.route_id;
 
   const client = new Client({
     host: process.env.DB_HOST,
@@ -136,7 +131,6 @@ const getBmtcTripStopTimesByRouteID = async (req, res) => {
   try {
     await client.connect();
 
-    // ✅ Query using route_id as a string
     const result = await client.query(
       'SELECT response FROM api_responses_paris_vishal_trips_stop_times WHERE route_id = $1',
       [routeID]
@@ -146,11 +140,22 @@ const getBmtcTripStopTimesByRouteID = async (req, res) => {
       return res.status(404).json({ message: 'Route not found' });
     }
 
-    // ✅ Return response as JSON
-    res.json({
-      route_id: routeID,
-      response: result.rows[0].response,
+    const responseData = result.rows[0].response;
+
+    // Reorder and include all stopTimes_*
+    const orderedResponse = {
+      route: responseData.route || {},
+      trips: responseData.trips || [],
+    };
+
+    // Dynamically add all keys starting with "stopTimes_"
+    Object.keys(responseData).forEach((key) => {
+      if (key.startsWith("stopTimes_")) {
+        orderedResponse[key] = responseData[key];
+      }
     });
+
+    res.json(orderedResponse);
 
   } catch (err) {
     console.error('Error retrieving trip stop times:', err);
@@ -163,6 +168,8 @@ const getBmtcTripStopTimesByRouteID = async (req, res) => {
     }
   }
 };
+
+
 
 
 // Export the function to be used in the route handler
