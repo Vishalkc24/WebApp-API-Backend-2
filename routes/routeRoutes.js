@@ -15,7 +15,7 @@ router.get('/api/routes', routeController.getAllRoutes);
 router.get('/api/routes/:route_id', routeController.getRouteByID);
 
 // Define the route to get polyline data by route_id from the database
-router.get('/api/bmtc-polyline/:route_id', routeController.getBmtcPolylineByRouteID);
+router.get('/api/paris-polyline/:route_id', routeController.getBmtcPolylineByRouteID);
 
 // Define the route to get polyline data by route_id from the database
 router.get('/api/fetch-trip-stop-times/:route_id', routeController.getBmtcTripStopTimesByRouteID);
