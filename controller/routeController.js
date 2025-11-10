@@ -19,8 +19,8 @@ const getAllRoutes = (req, res) => {
     const routes = lines.slice(1).map(line => {
       const [route_id, route_desc, route_type] = line.split(',').map(item => item.trim());
       return {
-        route_id: route_id,  // Now store as string instead of parsing as integer
-        route_desc: route_desc,
+        route_id: route_desc,
+        route_desc: route_id,  // Now store as string instead of parsing as integer
         route_type: parseInt(route_type)
       };
     });
